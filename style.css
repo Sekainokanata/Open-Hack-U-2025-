@@ -7,6 +7,10 @@ div{
 
     justify-content: center;
 }
+
+.toilet{
+    height: 100vh;
+}
 .unko{
     height: 100vh;
     display: inline-block;
