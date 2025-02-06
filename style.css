@@ -1,6 +1,10 @@
 
+body{
+    background-color: #764002;
+}
 h1{
     text-align: center;
+    color: aliceblue;
 }
 
 div{
