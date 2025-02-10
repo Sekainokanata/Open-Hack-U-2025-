@@ -30,5 +30,5 @@ div{
 }
 
 .shaking {
-    animation: shake 0.2s infinite;
+    animation: shake 0.1s infinite;
 }
