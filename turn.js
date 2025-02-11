@@ -1,7 +1,7 @@
-const image = document.querySelector('.unko');
+// const image = document.querySelector('.unko');
 
 
-image.addEventListener('keydown', event =>{
+document.addEventListener('keydown', event =>{
     if(event.code == "KeyR"){
         image.animate(
             [{transform: 'rotate(0deg)'}, {transform:'rotate(360deg)'}],
