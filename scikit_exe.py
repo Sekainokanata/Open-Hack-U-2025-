@@ -10,10 +10,12 @@ import scikit_learn as sl#SVMモデル
 def svm_exe(sp,sl):
     cls = -1
     
-    cls = sl.predict(sp)
+    if len(sp) > 0:
     
-    cls = np.argmax(cls)
-    
-    print(f'Predicted class: {cls}')
+        cls = sl.predict(sp)
+        
+        cls = np.argmax(cls)
+        
+        print(f'Predicted class: {cls}')
     
     return cls
