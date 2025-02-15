@@ -24,7 +24,6 @@ def record_sound():
                         rate=RATE, input=True,
                         frames_per_buffer=CHUNK)
 
-    print("録音を開始します...")
 
     frames = []
 
@@ -52,31 +51,31 @@ def record_sound():
 
 
 data = []
-
+count = 0
+print("記録を開始します")
 while True:
     k = keyboard.read_event()
     if k.event_type == keyboard.KEY_DOWN:  # キーが押されたか確認
         if k.name == "0" or k.name == "1":  # "0" か "1" のキー入力を確認
-            
+            count += 1
+            print(str(count)+"回目の録音を開始します")
+            print("ラベル"+k.name+"が追加されます")
             audio_data, time = record_sound()  # データを生成
             key = int(k.name)
-            print(key)
-            print(audio_data)
-            a = [key] + audio_data.tolist()
-            #print(a)
-            data.append(a)  # データをリストに追加
+            data.append([key] + audio_data.tolist())  # データをリストに追加
         
         elif k.name == "esc":  # "esc" キーが押されたら終了
+            print("記録を終了します")
             break
 
-#print(data)
+
 # 最後にリストをNumPy配列に変換
 data = np.array(data, dtype=object)
 
-print(data)
+
 
 # dataをCSVファイルに書き込み
-with open("Open-Hack-U-2025-/output_data.csv", "w", newline="") as csvfile:
+with open("sound_data.csv", "w", newline="") as csvfile:
     writer = csv.writer(csvfile)
     for row in data:
         writer.writerow(row)
