@@ -58,18 +58,17 @@ while True:
         if k.name == "0" or k.name == "1":  # "0" か "1" のキー入力を確認
             
             audio_data, time = record_sound()  # データを生成
-            key = np.array(int(k.name))
+            key = int(k.name)
             print(key)
             print(audio_data)
-            a = key + audio_data
-            #[ラベル, audio data]
-            print(a)
+            a = [key] + audio_data.tolist()
+            #print(a)
             data.append(a)  # データをリストに追加
         
         elif k.name == "esc":  # "esc" キーが押されたら終了
             break
 
-print(data)
+#print(data)
 # 最後にリストをNumPy配列に変換
 data = np.array(data, dtype=object)
 
