@@ -1,7 +1,7 @@
 import pyaudio
-import wave
 import matplotlib.pyplot as plt
 import numpy as np
+import keyboard
 
 # 録音の設定pip
 FORMAT = pyaudio.paInt16  # 音声のフォーマット
@@ -13,7 +13,7 @@ OUTPUT_FILENAME = "output.wav"  # 保存するファイル名
 
 
 
-def make_traindata():
+def record_sound():
     
     # PyAudioオブジェクトの生成
     audio = pyaudio.PyAudio()
@@ -48,10 +48,30 @@ def make_traindata():
     return audio_data, time
 
 
-    # グラフのプロット
-    #plt.figure(figsize=(10, 4))
-    #plt.plot(time, audio_data)
-    #plt.title("Recorded Audio Waveform")
-    #plt.xlabel("Time [s]")
-    #plt.ylabel("Amplitude")
-    #plt.show()
+
+
+data = []
+
+while True:
+    k = keyboard.read_event()
+    if k.event_type == keyboard.KEY_DOWN:  # キーが押されたか確認
+        if k.name == "0" or k.name == "1":  # "0" か "1" のキー入力を確認
+            
+            audio_data, time = record_sound()  # データを生成
+            key = np.array(int(k.name))
+            print(key)
+            print(audio_data)
+            a = key + audio_data
+            #[ラベル, audio data]
+            print(a)
+            data.append(a)  # データをリストに追加
+        
+        elif k.name == "esc":  # "esc" キーが押されたら終了
+            break
+
+print(data)
+# 最後にリストをNumPy配列に変換
+data = np.array(data, dtype=object)
+
+print(data)
+
