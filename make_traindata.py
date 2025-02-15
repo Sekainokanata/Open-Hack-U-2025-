@@ -2,6 +2,7 @@ import pyaudio
 import matplotlib.pyplot as plt
 import numpy as np
 import keyboard
+import csv
 
 # 録音の設定pip
 FORMAT = pyaudio.paInt16  # 音声のフォーマット
@@ -74,6 +75,14 @@ data = np.array(data, dtype=object)
 
 print(data)
 
-print(data[0][0])
-print(data[1][0])
+# dataをCSVファイルに書き込み
+with open("Open-Hack-U-2025-/output_data.csv", "w", newline="") as csvfile:
+    writer = csv.writer(csvfile)
+    for row in data:
+        writer.writerow(row)
+
+print("dataがoutput_data.csvに保存されました")
+
+#print(data[0][0])
+#print(data[1][0])
 
