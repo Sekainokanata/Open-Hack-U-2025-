@@ -74,3 +74,6 @@ data = np.array(data, dtype=object)
 
 print(data)
 
+print(data[0][0])
+print(data[1][0])
+
