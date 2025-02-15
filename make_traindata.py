@@ -1,0 +1,57 @@
+import pyaudio
+import wave
+import matplotlib.pyplot as plt
+import numpy as np
+
+# 録音の設定pip
+FORMAT = pyaudio.paInt16  # 音声のフォーマット
+CHANNELS = 1  # モノラル
+RATE = 44100  # サンプリングレート（44.1kHz）
+CHUNK = 1024  # データを一度に読み取る量
+RECORD_SECONDS = 0.5  # 録音時間（秒）
+OUTPUT_FILENAME = "output.wav"  # 保存するファイル名
+
+
+
+def make_traindata():
+    
+    # PyAudioオブジェクトの生成
+    audio = pyaudio.PyAudio()
+
+    # ストリームの開始
+    stream = audio.open(format=FORMAT, channels=CHANNELS,
+                        rate=RATE, input=True,
+                        frames_per_buffer=CHUNK)
+
+    print("録音を開始します...")
+
+    frames = []
+
+    # 録音のメインループ
+    for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
+        data = stream.read(CHUNK)
+        frames.append(data)
+
+    print("録音終了。ファイルに保存します...")
+
+    # ストリームの停止と終了
+    stream.stop_stream()
+    stream.close()
+    audio.terminate()
+
+    # 録音データを音声配列に変換 (WAVファイルには保存しない)
+    audio_data = np.frombuffer(b''.join(frames), dtype=np.int16)
+
+    # 時間軸の生成
+    time = np.linspace(0, RECORD_SECONDS, num=len(audio_data))
+
+    return audio_data, time
+
+
+    # グラフのプロット
+    #plt.figure(figsize=(10, 4))
+    #plt.plot(time, audio_data)
+    #plt.title("Recorded Audio Waveform")
+    #plt.xlabel("Time [s]")
+    #plt.ylabel("Amplitude")
+    #plt.show()
