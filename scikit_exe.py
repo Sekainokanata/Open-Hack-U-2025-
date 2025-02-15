@@ -10,9 +10,12 @@ import scikit_learn as sl#SVMモデル
 def svm_exe(sp,sl):
     cls = -1
     
-    if len(sp) > 0:
+    matrix = sp
+    learnd_model = sl
     
-        cls = sl.predict(sp)
+    if len(matrix) > 0:
+    
+        cls = learnd_model.predict(matrix)
         
         cls = np.argmax(cls)
         
