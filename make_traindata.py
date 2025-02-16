@@ -83,6 +83,7 @@ with open("Open-Hack-U-2025-/output_data.csv", "w", newline="") as csvfile:
 
 print("dataがoutput_data.csvに保存されました")
 
+
 #print(data[0][0])
 #print(data[1][0])
 
