@@ -1,6 +1,5 @@
 from cvzone.HandTrackingModule import HandDetector
 import cv2
-import keyboard
 import csv
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn import svm
