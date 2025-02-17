@@ -69,18 +69,3 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
-
-""""
-# --- SVMで学習（十分なデータがたまったら） ---
-if len(features) > 10:
-    X = np.array(features)
-    y = np.array(labels)
-
-    # SVMの初期化と学習
-    svm_model = SVC(kernel='rbf')
-    svm_model.fit(X, y)
-    
-    # モデルの保存
-    joblib.dump(svm_model, "finger_motion_svm_model.pkl")
-    print("SVMモデルを保存しました！")
-"""
