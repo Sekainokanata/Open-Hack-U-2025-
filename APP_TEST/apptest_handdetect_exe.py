@@ -6,7 +6,6 @@ from sklearn import svm
 import joblib
 import time
 import numpy as np
-
 # PCカメラの初期化
 cap = cv2.VideoCapture(0)
 
