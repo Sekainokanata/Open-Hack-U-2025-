@@ -5,10 +5,11 @@ import pandas as pd
 import os
 
 # パラメータ設定
-num_landmarks = 21  # 手のランドマークの数
-num_coordinates = 6  # 各ランドマークのx, y, zの3次元座標と回転rx, ry, rz
-time_steps = 60  # 30フレーム分の手の動き
-init_position = 2 # キーボードの初期位置
+num_landmarks = 52  # 手のランドマークの数
+num_coordinates = 7  # 各ランドマークのx, y, zの3次元座標と回転を4個
+time_steps = 60  # 60フレーム分の手の動き
+init_position = 2 * 3 # キーボードの初期位置
+camera_position = 2 * 3 #左右のカメラの位置
 
 # CSVファイルからデータを読み込む関数
 def load_csv_data(csv_file_path):
@@ -27,22 +28,30 @@ def load_all_csv_files(directory_path):
     file_list = sorted(os.listdir(directory_path))  # ディレクトリ内のファイルをソートして取得
     for file_name in file_list:
         if file_name.endswith('.csv'):
+            
             csv_file_path = os.path.join(directory_path, file_name)
             samples = load_csv_data(csv_file_path)
-
             X.append(samples)
     return np.array(X)  # shape: (num_samples, time_steps, num_landmarks * num_coordinates + init_position)
 
 # ランダムにラベルを生成（今回は10クラス分類を想定）
-def generate_random_labels(num_samples, num_classes=10):
-    return np.random.randint(0, num_classes, size=num_samples)
+def load_answer_labels(directory_path):        
+    file_name = 'iwamuro_AnswerLABEL.csv'
+    csv_file_path = os.path.join(directory_path, file_name)
+    y = load_csv_data(csv_file_path)
+    y = y.flatten()
+    print(y.shape)
+    print(y)
+    y_ord = [ord(char) for char in y]
+    print(y_ord)
+    return np.array(y_ord)  
 
 # 1D CNN + RNN（LSTM）モデルの定義
 def create_cnn_rnn_model():
     model = models.Sequential()
 
     # 1D CNN部分
-    model.add(layers.Conv1D(64, kernel_size=3, activation='relu', input_shape=(time_steps, num_landmarks * num_coordinates + init_position)))
+    model.add(layers.Conv1D(64, kernel_size=3, activation='relu', input_shape=(time_steps, 160)))
     model.add(layers.Conv1D(128, kernel_size=3, activation='relu'))
     model.add(layers.MaxPooling1D(pool_size=2))
     model.add(layers.Dropout(0.5))
@@ -60,7 +69,7 @@ def create_cnn_rnn_model():
     return model
 
 # データの前処理とモデルのトレーニング
-def main(csv_directory):
+def main(csv_directory, answer_directory):
     # CSVデータの読み込み
     X = load_all_csv_files(csv_directory)
     
@@ -68,7 +77,7 @@ def main(csv_directory):
     print(f"データの形状: {X.shape}")  # shape: (num_samples, time_steps, num_landmarks * num_coordinates + init_position)
 
     # ラベル生成（ランダム）
-    y = generate_random_labels(X.shape[0])
+    y = load_answer_labels(answer_directory)
 
     # モデルの作成
     cnn_rnn_model = create_cnn_rnn_model()
@@ -79,5 +88,6 @@ def main(csv_directory):
 # メインプログラムの実行
 if __name__ == '__main__':
     # CSVファイルが保存されているディレクトリを指定
-    csv_directory = '.\INPUT_csv'  # ここにCSVファイルのパスを指定
-    main(csv_directory)
+    csv_directory = '.\INPUT_iwamuro_csv'  # ここにCSVファイルのパスを指定
+    answer_directory = '.\AnswerLABEL'  # ここに正解ラベルのファイルのパスを指定
+    main(csv_directory, answer_directory)
