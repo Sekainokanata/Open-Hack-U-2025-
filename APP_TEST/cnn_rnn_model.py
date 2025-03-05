@@ -34,9 +34,9 @@ def load_all_csv_files(directory_path):
             X.append(samples)
     return np.array(X)  # shape: (num_samples, time_steps, num_landmarks * num_coordinates + init_position)
 
-# ランダムにラベルを生成（今回は10クラス分類を想定）
+# ランダムにラベルを生成
 def load_answer_labels(directory_path):        
-    file_name = 'iwamuro_AnswerLABEL.csv'
+    file_name = 'tanaka_AnswerLABEL.csv'
     csv_file_path = os.path.join(directory_path, file_name)
     y = load_csv_data(csv_file_path)
     y = y.flatten()
@@ -61,7 +61,7 @@ def create_cnn_rnn_model():
     model.add(layers.LSTM(64))
 
     # 出力層
-    model.add(layers.Dense(10, activation='softmax'))
+    model.add(layers.Dense(123, activation='softmax'))
 
     # コンパイル
     model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
@@ -88,6 +88,6 @@ def main(csv_directory, answer_directory):
 # メインプログラムの実行
 if __name__ == '__main__':
     # CSVファイルが保存されているディレクトリを指定
-    csv_directory = '.\INPUT_iwamuro_csv'  # ここにCSVファイルのパスを指定
+    csv_directory = '.\INPUT_tanaka_csv'  # ここにCSVファイルのパスを指定
     answer_directory = '.\AnswerLABEL'  # ここに正解ラベルのファイルのパスを指定
     main(csv_directory, answer_directory)
