@@ -1,15 +1,18 @@
 import tensorflow as tf
 from tensorflow.keras import layers, models
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
 import numpy as np
 import pandas as pd
 import os
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # パラメータ設定
 num_landmarks = 52  # 手のランドマークの数
 num_coordinates = 7  # 各ランドマークのx, y, zの3次元座標と回転を4個
 time_steps = 60  # 60フレーム分の手の動き
-init_position = 2 * 3 # キーボードの初期位置
+init_position = 3 # キーボードの初期位置
 camera_position = 2 * 3 #左右のカメラの位置
 
 # CSVファイルからデータを読み込む関数
@@ -28,11 +31,10 @@ def load_all_csv_files(directory_path):
     X = []
     file_list = sorted(os.listdir(directory_path))  # ディレクトリ内のファイルをソートして取得
     for file_name in file_list:
-        if file_name.endswith('.csv'):
-            
+        if file_name.endswith('.csv'):   
             csv_file_path = os.path.join(directory_path, file_name)
             samples = load_csv_data(csv_file_path)
-            X.append(samples[:,1:])
+            X.append(samples)
     return np.array(X)  # shape: (num_samples, time_steps, num_landmarks * num_coordinates + init_position)
 
 # ラベルデータの読み込み
@@ -44,7 +46,7 @@ def load_answer_labels(directory_path):
             csv_file_path = os.path.join(directory_path, file_name)
             labels = load_csv_data(csv_file_path)
             labels = labels.flatten()  # フラット化
-            print(labels)  # 各ファイルのラベルを表示
+            
             Y.append(labels)  # リストに追加
     
     Y = np.concatenate(Y, axis=0)  # 1次元で結合
@@ -52,12 +54,24 @@ def load_answer_labels(directory_path):
     print(Y)  # 結果の配列を表示
     return Y  # 結果の配列を返す
 
+def make_heatmap(y_test, y_predict):
+    # 混同行列を作成
+    conf_matrix = confusion_matrix(y_test, y_predict)
+
+    # ヒートマップで混同行列を表示
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', cbar=True)
+    plt.xlabel('Predicted Labels')
+    plt.ylabel('True Labels')
+    plt.title('Confusion Matrix')
+    plt.show()
+
 # 1D CNN + RNN（LSTM）モデルの定義
 def create_cnn_rnn_model():
     model = models.Sequential()
 
     # 1D CNN部分
-    model.add(layers.Conv1D(64, kernel_size=3, activation='relu', input_shape=(time_steps, 367)))
+    model.add(layers.Conv1D(64, kernel_size=3, activation='relu', input_shape=(time_steps, 373)))
     model.add(layers.Conv1D(128, kernel_size=3, activation='relu'))
     model.add(layers.MaxPooling1D(pool_size=2))
     model.add(layers.Dropout(0.5))
@@ -97,6 +111,11 @@ def main(csv_directory, answer_directory):
     print("Evaluate on test data")
     results = cnn_rnn_model.evaluate(X_test, y_test, batch_size=32)
     print("test loss, test acc:", results)
+    
+    # 予測を行う
+    y_pred = np.argmax(cnn_rnn_model.predict(X_test), axis=1)
+    
+    make_heatmap(y_test, y_pred)
 
     # Generate predictions (probabilities -- the output of the last layer)
     # on new data using `predict`
