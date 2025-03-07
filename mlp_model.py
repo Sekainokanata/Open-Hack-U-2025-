@@ -6,8 +6,8 @@ from tensorflow.keras.utils import to_categorical
 
 # データの設定
 num_samples = 1000  # データサンプル数
-num_landmarks = 21  # ランドマークの数
-num_coordinates = 3  # 各ランドマークの座標数 (x, y, z)
+num_landmarks = 52  # ランドマークの数
+num_coordinates = 7  # 各ランドマークの座標数 (x, y, z)
 num_classes = 10  # クラス数（10クラス分類）
 
 # ランダムに座標データを生成（入力データ: ランドマーク座標）
@@ -28,7 +28,7 @@ print(f'X_test shape: {X_test.shape}, y_test shape: {y_test.shape}')
 
 
 # 1次元データ（例: 手のランドマーク座標の数が21個、x, y, z座標がある場合）
-input_dim = 21 * 3  # 21個のランドマーク×3次元（x, y, z）
+input_dim = 52 * 7  # 21個のランドマーク×3次元（x, y, z）
 
 # MLPモデルを定義
 def create_mlp_model(input_dim):
