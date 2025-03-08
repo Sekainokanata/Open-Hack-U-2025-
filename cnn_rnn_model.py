@@ -7,16 +7,19 @@ import torch.optim as optim
 import torch_directml  # DirectMLを利用するためのライブラリ
 from torch.utils.data import Dataset, DataLoader
 from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
 
 # DirectMLデバイスの設定
 device = torch_directml.device()
 
 # パラメータ設定
 num_landmarks = 52    # 手のランドマークの数
-num_coordinates = 7   # 各ランドマークのx, y, zの3次元座標と回転
-time_steps = 60       # フレーム数
+num_coordinates = 3   # 各ランドマークのx, y, zの3次元座標と回転
+time_steps = 15       # フレーム数
 input_features = num_landmarks * num_coordinates + 3 + 6 # csvのカラム数(手動調整)
-num_classes = 26 - 2
+num_classes = 12
 
 # CSVファイルからデータを読み込む関数（PyTorch用の前処理）
 def load_csv_data(csv_file_path):
@@ -125,13 +128,13 @@ def main(csv_directory, answer_directory):
     X = load_all_csv_files(csv_directory)  # shape: (num_samples, time_steps, input_features - 1)
     y = load_answer_labels(answer_directory)
     
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=42)
     
     train_dataset = HandDataset(X_train, y_train)
     test_dataset = HandDataset(X_test, y_test)
     
-    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+    train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
     
     model = CNNRNN().to(device)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -139,7 +142,7 @@ def main(csv_directory, answer_directory):
     
     # トレーニングループ（エポック数は10）
     model.train()
-    for epoch in range(20):
+    for epoch in range(100):
         running_loss = 0.0
         for batch_X, batch_y in train_loader:
             batch_X, batch_y = batch_X.to(device), batch_y.to(device)
@@ -154,16 +157,27 @@ def main(csv_directory, answer_directory):
     
     # 評価
     model.eval()
-    correct = 0
-    total = 0
+    all_preds = []
+    all_labels = []
     with torch.no_grad():
         for batch_X, batch_y in test_loader:
             batch_X, batch_y = batch_X.to(device), batch_y.to(device)
             outputs = model(batch_X)
-            pred = outputs.argmax(dim=1)
-            total += batch_y.size(0)
-            correct += (pred == batch_y).sum().item()
-    print("Test Accuracy: {:.2f}%".format(100 * correct / total))
+            preds = outputs.argmax(dim=1)
+            all_preds.extend(preds.cpu().numpy())
+            all_labels.extend(batch_y.cpu().numpy())
+
+    accuracy = 100 * np.sum(np.array(all_preds) == np.array(all_labels)) / len(all_labels)
+    print("Test Accuracy: {:.2f}%".format(accuracy))
+
+    # 混同行列をヒートマップで表示
+    cm = confusion_matrix(all_labels, all_preds)
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+    plt.xlabel('Predicted Labels')
+    plt.ylabel('True Labels')
+    plt.title('Confusion Matrix')
+    plt.show()
     
 if __name__ == '__main__':
     csv_directory = r'.\INPUT_csv'
