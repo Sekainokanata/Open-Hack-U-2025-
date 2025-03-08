@@ -60,6 +60,8 @@ def main():
         depth=8,
         early_stopping_rounds=100,
         verbose=10,
+        task_type="GPU",   # GPUモードを有効化
+        devices="0",       # 利用するGPUデバイスの指定（例: "0" は1枚目のGPU）
         #l2_leaf_reg=3,
     )
     
