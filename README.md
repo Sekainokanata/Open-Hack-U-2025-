@@ -1,14 +1,4 @@
-# Open-Hack-U-2025-
+# Open-Hack-U-2025-OSAKA
 
-Open Hack Uのある程度完成されたプログラムをここにバックアップ代わりとして共有しよう<br>
-誰がコードを書いたかはどうにかして分かるような形にするつもり
-
-あああああ
-
-
-Yiwamasa hiraketiiiiiiiii
-Yiwamasa branch daaaaaaaa
-
-誰がコードを書いたかはどうにかして分かるような形にするつもり<br>
-テストテスト
-unko unko
+## 著作権表示
+Copyright © Meta Platform Technologies, LLC and its affiliates. All rights reserved
